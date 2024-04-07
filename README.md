@@ -7,9 +7,31 @@
 Пример исправленного кода для обработки поиска продуктов:
 
 ```go
-func searchHandler(w http.ResponseWriter, r *http.Request) {
-    // ... предыдущий код
+package main
 
+import (
+    "database/sql"
+    "fmt"
+    "log"
+    "net/http"
+    "github.com/go-sql-driver/mysql"
+)
+
+var db *sql.DB
+var err error
+
+func initDB() {
+    db, err = sql.Open("mysql", "user:password@/dbname")
+    if err != nil {
+        log.Fatal(err)
+    }
+
+err = db.Ping()
+if err != nil {
+    log.Fatal(err)
+    }
+}
+func searchHandler(w http.ResponseWriter, r *http.Request) {
     stmt, err := db.Prepare("SELECT * FROM products WHERE name LIKE ?")
     if err != nil {
         http.Error(w, "Server error", http.StatusInternalServerError)
